@@ -1,9 +1,13 @@
-import React from 'react'
+import { Toaster } from 'react-hot-toast'
+import Header from './components/Header'
+import Hero from './components/Hero'
 
 const App = () => {
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold text-center ">Amparo Salud</h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
+      <Toaster position="top-center" />
+      <Header />
+      <Hero />
     </div>
   )
 }
