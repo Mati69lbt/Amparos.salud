@@ -1,18 +1,19 @@
-import { Accessibility, Hospital, MapPin, Pill, ShieldCheck, Stethoscope, TrendingUp } from 'lucide-react'
+import { Accessibility, AlertCircle, Hospital, MapPin, Pill, ShieldAlert, ShieldCheck, Stethoscope } from 'lucide-react'
 import ContactForm from './ContactForm'
 
 const CASOS = [
-  { icon: TrendingUp, texto: 'Aumentos desmedidos en la cuota de la prepaga.' },
   { icon: Pill, texto: 'Negativa en cobertura de medicamentos o tratamientos.' },
-  { icon: Accessibility, texto: 'Cobertura en prestaciones por discapacidad.' },
+  { icon: Accessibility, texto: 'Cobertura en prestaciones por discapacidad (CUD).' },
   { icon: Hospital, texto: 'Rechazo de afiliación o cambios de plan intempestivos.' },
   { icon: Stethoscope, texto: 'Incumplimiento en cirugías o prótesis.' },
+  { icon: ShieldAlert, texto: 'Negativa de afiliación a monotributistas y otros.' },
+  { icon: AlertCircle, texto: 'Rechazo de cirugías o prótesis.' },
 ]
 
 const Hero = () => {
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 items-start gap-12 px-6 py-16 lg:py-24 max-w-6xl mx-auto">
-      <div className="max-w-3xl">
+    <section className="grid grid-cols-1 md:grid-cols-2 items-start gap-6 md:gap-14 px-6 sm:px-10 lg:px-32 xl:px-48 py-6 lg:py-8 w-full mx-auto">
+      <div>
         <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium mb-3">
           <ShieldCheck size={20} />
           <span>Evaluación de caso 100% confidencial</span>

@@ -13,13 +13,16 @@ There is no test runner configured yet.
 
 ## Architecture
 
-Minimal React 19 + Vite scaffold (Tailwind CSS v4 via `@tailwindcss/vite`, no config file needed for Tailwind).
+React 19 + Vite scaffold (Tailwind CSS v4 via `@tailwindcss/vite`, no config file needed for Tailwind). Dark mode uses Tailwind's `dark:` class variant, toggled on `document.documentElement`.
 
 - `src/main.jsx` — entry point, mounts `<App />` into `#root` (see `index.html`), wraps in `StrictMode`.
-- `src/App.jsx` — currently the only component; app UI is being built out from here.
+- `src/App.jsx` — top-level layout: renders `<Toaster />` (react-hot-toast), `Header`, `Hero`.
+- `src/components/Header.jsx` — brand + theme toggle button, uses `useTheme`.
+- `src/components/Hero.jsx` — landing pitch/value-prop content, renders `ContactForm`.
+- `src/components/ContactForm.jsx` — the lead-capture form; on submit sends via EmailJS (`@emailjs/browser`) using `VITE_EMAILJS_SERVICE_ID`/`VITE_EMAILJS_TEMPLATE_ID`/`VITE_EMAILJS_PUBLIC_KEY` from `.env.local`, then shows a `react-hot-toast` result. Firestore persistence is not wired up yet — only the EmailJS notification exists today (see form requirements below for the intended full flow).
+- `src/hooks/useTheme.js` — theme state (`light`/`dark`), persisted to `localStorage` under `amparo-salud-theme`, defaulting to `prefers-color-scheme`.
 - `src/index.css` — single global stylesheet, just `@import "tailwindcss";`.
-- `react-hot-toast` is a dependency but not yet wired up anywhere.
-- No router, state management, or API layer exists yet — introduce these only as the app actually needs them.
+- No router, state management library, or `src/firebase/` integration exists yet — introduce these only as the app actually needs them (the private Mini-CRM described below is not built yet).
 
 ESLint config (`eslint.config.js`) is flat-config style: `js.configs.recommended` + `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh` (Vite preset), browser globals, JSX enabled for `**/*.{js,jsx}`. `dist/` is ignored.
 
