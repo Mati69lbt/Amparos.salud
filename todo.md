@@ -1,28 +1,26 @@
 # Lista de Tareas y Ajustes del Proyecto
 
 ## 🛠️ Modificaciones en la Página Web y Formulario
-- [X] **Ajustes en Instagram / Redes:**
+
+- [x] **Ajustes en Instagram / Redes:**
   - Cambiar el segundo renglón de Instagram: en vez de que diga "antes", que diga "contra".
   - Usuario / Referencia: `Estudiojuridicovalin`.
-- [X] **Contenido de la web:**
+- [x] **Contenido de la web:**
   - Sacar el texto "aumento desmedido de la cuota de la prepaga".
   - Después de "discapacidad", agregar entre paréntesis **(CUD)**.
   - Agregar: "Negativa de afiliación a monotributistas y otros."
   - Agregar: "Rechazo de cirugías o prótesis."
-- [ ] **UI / UX del Formulario:**
-  - [ ] Evaluación / Opcional: Agregar un input/select que diga "Obra Social o Prepaga".
-  - [ ] Definir lógica del Select:
-    - Incluir listado de sugerencias de Obras Sociales / Prepagas.
-    - Si la opción elegida es "Otra", transformar el `select` en un `input` de texto.
-    - Agregar botón/ícono para deshacer/volver atrás si el usuario se arrepiente.
-  - [ ] Evaluar si se usa un *checkbox* previo para mostrar/ocultar el selector (buscando que sea lo más intuitivo posible y no distraiga).
+- [x] **UI / UX del Formulario (Obra Social / Prepaga):**
+  - Simplificado: En vez de un select complejo, usar un `input` de texto directo con un placeholder descriptivo (ej: "Ingresá tu Obra Social o Prepaga...").
 
 ## 📝 Contenido y Estrategia
+
 - [ ] Analizar en detalle los posteos a publicar.
 - [ ] Definir y redactar la sección **"Quiénes somos"**.
 
 ## 📣 Marketing y Redes Sociales
-- [ ] **Campañas:** Esperar que se retire el *tag* de "Nuevo" antes de lanzar la campaña publicitaria.
+
+- [ ] **Campañas:** Esperar que se retire el _tag_ de "Nuevo" antes de lanzar la campaña publicitaria.
 - [ ] **Redes / Competencia:**
   - Empezar a seguir a los usuarios que le dan "Me gusta" y comentan en la competencia.
   - Buscar en la lupa de las redes todo lo referido al rubro / competencia.
