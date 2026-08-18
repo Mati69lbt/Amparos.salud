@@ -106,6 +106,7 @@ const ContactForm = () => {
             onChange={handleChange}
             className={inputClass}
             disabled={isSending}
+            placeholder="Ej: 3436157822 o 3424941517"
             required
           />
         </div>
