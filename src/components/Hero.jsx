@@ -12,7 +12,7 @@ const CASOS = [
 
 const Hero = () => {
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 items-start gap-6 md:gap-14 px-6 sm:px-10 lg:px-32 xl:px-70 py-6 lg:py-8 w-full mx-auto">
+    <section className="grid grid-cols-1 md:grid-cols-2 items-start gap-6 md:gap-14 px-6 py-6 lg:py-8 w-full max-w-7xl mx-auto">
       <div>
         <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium mb-3">
           <ShieldCheck size={20} />
