@@ -1,6 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Eye, EyeOff, LogOut, Moon, Plus, Search, ShieldPlus, Sun, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Eye,
+  EyeOff,
+  LogOut,
+  Moon,
+  Plus,
+  Search,
+  ShieldPlus,
+  Sun,
+  Trash2,
+} from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
 import { useCrmAuth } from "../hooks/useCrmAuth";
 import { subscribeToLeads, addLead, updateLead, deleteLead } from "../firebase/leadsService";
@@ -24,6 +37,53 @@ const formatTime = (timestamp) => {
   return timestamp.toDate().toLocaleTimeString("es-AR");
 };
 
+const SORT_COLUMN_OPTIONS = [
+  { value: "name", label: "Nombre" },
+  { value: "phone", label: "Contacto" },
+  { value: "status", label: "Estado" },
+  { value: "createdAt", label: "Fecha" },
+];
+
+const SORT_ACCESSORS = {
+  name: (lead) => lead.name?.toLowerCase() ?? "",
+  phone: (lead) => lead.phone ?? "",
+  status: (lead) => lead.status ?? "",
+  createdAt: (lead) => lead.createdAt?.toMillis?.() ?? 0,
+};
+
+const sortLeads = (leads, { column, direction }) => {
+  if (!column) return leads;
+  const accessor = SORT_ACCESSORS[column];
+  const sorted = [...leads].sort((a, b) => {
+    const valueA = accessor(a);
+    const valueB = accessor(b);
+    if (valueA < valueB) return -1;
+    if (valueA > valueB) return 1;
+    return 0;
+  });
+  return direction === "desc" ? sorted.reverse() : sorted;
+};
+
+const SortableHeader = ({ column, label, sortConfig, onSort }) => {
+  const isActive = sortConfig.column === column;
+  const Icon = isActive ? (sortConfig.direction === "asc" ? ArrowUp : ArrowDown) : ArrowUpDown;
+
+  return (
+    <th className="px-4 py-3">
+      <button
+        type="button"
+        onClick={() => onSort(column)}
+        className={`flex items-center gap-1 font-medium hover:text-gray-900 dark:hover:text-white ${
+          isActive ? "text-gray-900 dark:text-white" : ""
+        }`}
+      >
+        {label}
+        <Icon size={14} />
+      </button>
+    </th>
+  );
+};
+
 const LoginGate = ({ onLogin }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +97,7 @@ const LoginGate = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+    <div className="min-h-screen flex items-start justify-center pt-20 bg-gray-50 dark:bg-gray-950 px-4">
       <button
         type="button"
         onClick={toggleTheme}
@@ -94,6 +154,14 @@ const ClientesPage = () => {
   const [editingLead, setEditingLead] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [sortConfig, setSortConfig] = useState({ column: "createdAt", direction: "desc" });
+
+  const handleSort = (column) => {
+    setSortConfig((prev) => {
+      if (prev.column !== column) return { column, direction: "asc" };
+      return { column, direction: prev.direction === "asc" ? "desc" : "asc" };
+    });
+  };
 
   useEffect(() => {
     document.title = "Panel CRM | Amparo Salud";
@@ -136,6 +204,11 @@ const ClientesPage = () => {
       return matchesStatus && matchesTerm;
     });
   }, [leads, search, statusFilter]);
+
+  const sortedLeads = useMemo(
+    () => sortLeads(filteredLeads, sortConfig),
+    [filteredLeads, sortConfig],
+  );
 
   if (!isAuthenticated) {
     return <LoginGate onLogin={login} />;
@@ -205,7 +278,7 @@ const ClientesPage = () => {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -240,85 +313,172 @@ const ClientesPage = () => {
           </button>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400">
-              <tr>
-                <th className="px-4 py-3">Nombre</th>
-                <th className="px-4 py-3">Contacto</th>
-                <th className="px-4 py-3">Consulta</th>
-                <th className="px-4 py-3">Estado</th>
-                <th className="px-4 py-3">Fecha</th>
-                <th className="px-4 py-3">Hora</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-950">
-              {isLoading && (
-                <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
-                    Cargando clientes...
-                  </td>
-                </tr>
-              )}
+        {isLoading && (
+          <div className="px-4 py-8 text-center text-gray-500 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+            Cargando clientes...
+          </div>
+        )}
 
-              {!isLoading && filteredLeads.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
-                    No se encontraron clientes.
-                  </td>
-                </tr>
-              )}
+        {!isLoading && sortedLeads.length === 0 && (
+          <div className="px-4 py-8 text-center text-gray-500 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+            No se encontraron clientes.
+          </div>
+        )}
 
-              {!isLoading &&
-                filteredLeads.map((lead) => (
-                  <tr
-                    key={lead.id}
-                    className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
-                    onClick={() => setEditingLead(lead)}
-                  >
-                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{lead.name}</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
-                      {lead.phone}
-                      {lead.email && <div>{lead.email}</div>}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-xs truncate">
-                      {lead.message}
-                    </td>
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <select
-                        value={lead.status}
-                        onChange={(e) => handleStatusChange(lead, e.target.value)}
-                        className={`text-xs font-semibold px-2 py-1 rounded-full border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 ${STATUS_BADGE[lead.status] ?? ""}`}
-                      >
-                        {STATUS_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-500 whitespace-nowrap">
-                      {formatDate(lead.createdAt)}
-                    </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-500 whitespace-nowrap">
-                      {formatTime(lead.createdAt)}
-                    </td>
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        type="button"
-                        onClick={() => setPendingDeleteId(lead.id)}
-                        className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
-                        aria-label="Eliminar"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
-                  </tr>
+        {!isLoading && sortedLeads.length > 0 && (
+          <>
+            {/* Mobile: sort controls */}
+            <div className="flex items-center gap-2 mb-3 md:hidden">
+              <select
+                value={sortConfig.column}
+                onChange={(e) => setSortConfig((prev) => ({ ...prev, column: e.target.value }))}
+                className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {SORT_COLUMN_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    Ordenar por: {option.label}
+                  </option>
                 ))}
-            </tbody>
-          </table>
-        </div>
+              </select>
+              <button
+                type="button"
+                onClick={() =>
+                  setSortConfig((prev) => ({
+                    ...prev,
+                    direction: prev.direction === "asc" ? "desc" : "asc",
+                  }))
+                }
+                className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300"
+                aria-label={sortConfig.direction === "asc" ? "Orden ascendente" : "Orden descendente"}
+              >
+                {sortConfig.direction === "asc" ? <ArrowUp size={18} /> : <ArrowDown size={18} />}
+              </button>
+            </div>
+
+            {/* Mobile: cards */}
+            <div className="grid gap-3 md:hidden">
+              {sortedLeads.map((lead) => (
+                <div
+                  key={lead.id}
+                  className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4 space-y-3"
+                  onClick={() => setEditingLead(lead)}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white">{lead.name}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{lead.phone}</p>
+                      {lead.email && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{lead.email}</p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPendingDeleteId(lead.id);
+                      }}
+                      className="p-2.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
+                      aria-label="Eliminar"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+
+                  {lead.message && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">{lead.message}</p>
+                  )}
+
+                  <div className="flex items-center justify-between gap-2 pt-1 border-t border-gray-100 dark:border-gray-800">
+                    <select
+                      value={lead.status}
+                      onChange={(e) => handleStatusChange(lead, e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className={`text-xs font-semibold px-2.5 py-1.5 rounded-full border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 ${STATUS_BADGE[lead.status] ?? ""}`}
+                    >
+                      {STATUS_OPTIONS.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="text-xs text-gray-500 dark:text-gray-500 whitespace-nowrap">
+                      {formatDate(lead.createdAt)} · {formatTime(lead.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: table */}
+            <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400">
+                  <tr>
+                    <SortableHeader column="name" label="Nombre" sortConfig={sortConfig} onSort={handleSort} />
+                    <SortableHeader column="phone" label="Contacto" sortConfig={sortConfig} onSort={handleSort} />
+                    <th className="px-4 py-3">Consulta</th>
+                    <SortableHeader column="status" label="Estado" sortConfig={sortConfig} onSort={handleSort} />
+                    <SortableHeader
+                      column="createdAt"
+                      label="Fecha"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                    />
+                    <th className="px-4 py-3">Hora</th>
+                    <th className="px-4 py-3" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-950">
+                  {sortedLeads.map((lead) => (
+                    <tr
+                      key={lead.id}
+                      className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+                      onClick={() => setEditingLead(lead)}
+                    >
+                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{lead.name}</td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                        {lead.phone}
+                        {lead.email && <div>{lead.email}</div>}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-xs truncate">
+                        {lead.message}
+                      </td>
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <select
+                          value={lead.status}
+                          onChange={(e) => handleStatusChange(lead, e.target.value)}
+                          className={`text-xs font-semibold px-2 py-1 rounded-full border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 ${STATUS_BADGE[lead.status] ?? ""}`}
+                        >
+                          {STATUS_OPTIONS.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 text-gray-500 dark:text-gray-500 whitespace-nowrap">
+                        {formatDate(lead.createdAt)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-500 dark:text-gray-500 whitespace-nowrap">
+                        {formatTime(lead.createdAt)}
+                      </td>
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() => setPendingDeleteId(lead.id)}
+                          className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
+                          aria-label="Eliminar"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </main>
 
       {(isCreating || editingLead) && (
