@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { LogOut, Moon, Plus, Search, ShieldPlus, Sun, Trash2 } from "lucide-react";
+import { Eye, EyeOff, LogOut, Moon, Plus, Search, ShieldPlus, Sun, Trash2 } from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
 import { useCrmAuth } from "../hooks/useCrmAuth";
 import { subscribeToLeads, addLead, updateLead, deleteLead } from "../firebase/leadsService";
@@ -26,6 +26,7 @@ const formatTime = (timestamp) => {
 
 const LoginGate = ({ onLogin }) => {
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
   const handleSubmit = (e) => {
@@ -54,14 +55,24 @@ const LoginGate = ({ onLogin }) => {
           <ShieldPlus className="text-blue-600 dark:text-blue-400" size={24} />
           Panel CRM
         </div>
-        <input
-          type="password"
-          autoFocus
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Contraseña"
-          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            autoFocus
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Contraseña"
+            className="w-full px-4 py-2.5 pr-11 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
         <button
           type="submit"
           className="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
