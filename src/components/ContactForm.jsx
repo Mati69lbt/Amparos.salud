@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import emailjs from "@emailjs/browser";
+import { addLead } from "../firebase/leadsService";
 
 const INITIAL_FORM = {
   nombre: "",
@@ -32,25 +33,31 @@ const ContactForm = () => {
       return;
     }
 
-    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-      toast.error(
-        "El formulario no está configurado correctamente. Contactanos por otro medio.",
-      );
-      return;
-    }
-
     setIsSending(true);
     try {
-      await emailjs.send(
-        SERVICE_ID,
-        TEMPLATE_ID,
-        {
-          from_name: form.nombre,
-          phone: form.telefono,
-          message: form.mensaje,
-        },
-        { publicKey: PUBLIC_KEY },
-      );
+      await addLead({
+        name: form.nombre,
+        phone: form.telefono,
+        message: form.mensaje,
+      });
+
+      if (SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY) {
+        try {
+          await emailjs.send(
+            SERVICE_ID,
+            TEMPLATE_ID,
+            {
+              from_name: form.nombre,
+              phone: form.telefono,
+              message: form.mensaje,
+            },
+            { publicKey: PUBLIC_KEY },
+          );
+        } catch (emailError) {
+          console.error("Error al enviar el email de notificación:", emailError);
+        }
+      }
+
       toast.success(
         "¡Consulta enviada con éxito! Te contactaremos a la brevedad.",
       );
