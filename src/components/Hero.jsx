@@ -1,14 +1,33 @@
-import { Accessibility, AlertCircle, Hospital, MapPin, Pill, ShieldAlert, ShieldCheck, Stethoscope } from 'lucide-react'
-import ContactForm from './ContactForm'
+import {
+  Accessibility,
+  AlertCircle,
+  Hospital,
+  MapPin,
+  Pill,
+  ShieldAlert,
+  ShieldCheck,
+  Stethoscope,
+} from "lucide-react";
+import ContactForm from "./ContactForm";
 
 const CASOS = [
-  { icon: Pill, texto: 'Negativa en cobertura de medicamentos o tratamientos.' },
-  { icon: Accessibility, texto: 'Cobertura en prestaciones por discapacidad (CUD).' },
-  { icon: Hospital, texto: 'Rechazo de afiliación o cambios de plan intempestivos.' },
-  { icon: Stethoscope, texto: 'Incumplimiento en cirugías o prótesis.' },
-  { icon: ShieldAlert, texto: 'Negativa de afiliación a monotributistas y otros.' },
-  { icon: AlertCircle, texto: 'Rechazo de cirugías o prótesis.' },
-]
+  {
+    icon: Pill,
+    texto: "Negativa en cobertura de medicamentos o tratamientos.",
+  },
+  {
+    icon: Accessibility,
+    texto: "Cobertura en prestaciones por discapacidad (CUD).",
+  },
+  {
+    icon: ShieldAlert,
+    texto: "Negativa de afiliación a monotributistas y otros.",
+  },
+  {
+    icon: AlertCircle,
+    texto: "Rechazo o incumplimiento de cirugías o protesis.",
+  },
+];
 
 const Hero = () => {
   return (
@@ -22,11 +41,13 @@ const Hero = () => {
         {/*  prepaga u obra social */}
 
         <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight">
-  Reclamá por tus derechos ante tu{' '}
-  <span className="text-blue-600 dark:text-blue-400">Obra Social</span>{' '}
-  o{' '}
-  <span className="text-emerald-600 dark:text-emerald-400">Prepaga</span>
-</h1>
+          Reclamá por tus derechos ante tu{" "}
+          <span className="text-blue-600 dark:text-blue-400">Obra Social</span>{" "}
+          o{" "}
+          <span className="text-emerald-600 dark:text-emerald-400">
+            Prepaga
+          </span>
+        </h1>
 
         <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
           Analizamos la situación ante tu prepaga/obra social y te ayudamos a
@@ -35,8 +56,14 @@ const Hero = () => {
 
         <ul className="mt-6 space-y-3">
           {CASOS.map(({ icon: Icon, texto }) => (
-            <li key={texto} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
-              <Icon size={20} className="mt-0.5 shrink-0 text-blue-600 dark:text-blue-400" />
+            <li
+              key={texto}
+              className="flex items-start gap-3 text-gray-700 dark:text-gray-300"
+            >
+              <Icon
+                size={20}
+                className="mt-0.5 shrink-0 text-blue-600 dark:text-blue-400"
+              />
               <span>{texto}</span>
             </li>
           ))}
@@ -58,7 +85,7 @@ const Hero = () => {
         <ContactForm />
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;
