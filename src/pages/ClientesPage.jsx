@@ -85,14 +85,19 @@ const SortableHeader = ({ column, label, sortConfig, onSort }) => {
 };
 
 const LoginGate = ({ onLogin }) => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!onLogin(password)) {
-      toast.error("Contraseña incorrecta.");
+    setIsSubmitting(true);
+    const success = await onLogin(email, password);
+    setIsSubmitting(false);
+    if (!success) {
+      toast.error("Email o contraseña incorrectos.");
     }
   };
 
@@ -115,10 +120,17 @@ const LoginGate = ({ onLogin }) => {
           <ShieldPlus className="text-blue-600 dark:text-blue-400" size={24} />
           Panel CRM
         </div>
+        <input
+          type="email"
+          autoFocus
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
-            autoFocus
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Contraseña"
@@ -135,9 +147,10 @@ const LoginGate = ({ onLogin }) => {
         </div>
         <button
           type="submit"
-          className="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+          disabled={isSubmitting}
+          className="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold"
         >
-          Ingresar
+          {isSubmitting ? "Ingresando..." : "Ingresar"}
         </button>
       </form>
     </div>
@@ -146,7 +159,7 @@ const LoginGate = ({ onLogin }) => {
 
 const ClientesPage = () => {
   const { theme, toggleTheme } = useTheme();
-  const { isAuthenticated, login, logout } = useCrmAuth();
+  const { isAuthenticated, isChecking, login, logout } = useCrmAuth();
   const [leads, setLeads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -209,6 +222,10 @@ const ClientesPage = () => {
     () => sortLeads(filteredLeads, sortConfig),
     [filteredLeads, sortConfig],
   );
+
+  if (isChecking) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return <LoginGate onLogin={login} />;

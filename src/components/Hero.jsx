@@ -25,7 +25,7 @@ const CASOS = [
   },
   {
     icon: AlertCircle,
-    texto: "Rechazo o incumplimiento de cirugías o protesis.",
+    texto: "Rechazo o incumplimiento de cirugías o prótesis.",
   },
 ];
 

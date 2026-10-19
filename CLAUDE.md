@@ -20,10 +20,10 @@ React 19 + Vite scaffold (Tailwind CSS v4 via `@tailwindcss/vite`, no config fil
 - `src/components/Header.jsx` — brand + theme toggle button, uses `useTheme`.
 - `src/components/Hero.jsx` — landing pitch/value-prop content, renders `ContactForm`.
 - `src/components/ContactForm.jsx` — the lead-capture form; on submit persists the lead via `addLead` (Firestore) and, if EmailJS env vars are set, best-effort sends a notification via EmailJS (`@emailjs/browser`), then shows a `react-hot-toast` result.
-- `src/firebase/config.js` — initializes the Firebase app + Firestore (`db`) from `VITE_FIREBASE_*` env vars.
+- `src/firebase/config.js` — initializes the Firebase app + Firestore (`db`) + Auth (`auth`) from `VITE_FIREBASE_*` env vars.
 - `src/firebase/leadsService.js` — Firestore CRUD helpers for the `leads` collection: `addLead`, `subscribeToLeads` (realtime, ordered by `createdAt` desc), `updateLead`, `deleteLead`.
-- `src/pages/ClientesPage.jsx` — hidden CRM at `/clientes`: password gate (`useCrmAuth`), realtime leads table with search/status filter, create/edit modal, delete with confirmation. Sets `<meta name="robots" content="noindex, nofollow">` on mount.
-- `src/hooks/useCrmAuth.js` — client-side password gate for the CRM, checked against `VITE_CRM_PASSWORD`, session persisted in `sessionStorage`.
+- `src/pages/ClientesPage.jsx` — hidden CRM at `/clientes`: Firebase Auth login gate (`useCrmAuth`), realtime leads table with search/status filter, create/edit modal, delete with confirmation. Sets `<meta name="robots" content="noindex, nofollow">` on mount.
+- `src/hooks/useCrmAuth.js` — Firebase Authentication (email/password) gate for the CRM via `onAuthStateChanged`/`signInWithEmailAndPassword`/`signOut`.
 - `src/components/crm/LeadModal.jsx` — create/edit form modal for a lead.
 - `src/components/crm/crmConstants.js` — shared CRM constants (`STATUS_OPTIONS`), kept out of component files for Fast Refresh.
 - `src/hooks/useTheme.js` — theme state (`light`/`dark`), persisted to `localStorage` under `amparo-salud-theme`, defaulting to `prefers-color-scheme`.

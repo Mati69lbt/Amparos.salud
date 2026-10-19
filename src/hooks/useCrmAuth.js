@@ -1,24 +1,33 @@
-import { useState } from "react";
-
-const SESSION_KEY = "amparo-crm-auth";
-const CRM_PASSWORD = import.meta.env.VITE_CRM_PASSWORD;
+import { useEffect, useState } from "react";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { auth } from "../firebase/config";
 
 export const useCrmAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    () => sessionStorage.getItem(SESSION_KEY) === "true",
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
 
-  const login = (password) => {
-    if (!CRM_PASSWORD || password !== CRM_PASSWORD) return false;
-    sessionStorage.setItem(SESSION_KEY, "true");
-    setIsAuthenticated(true);
-    return true;
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+      setIsChecking(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  const login = async (email, password) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
-  const logout = () => {
-    sessionStorage.removeItem(SESSION_KEY);
-    setIsAuthenticated(false);
-  };
+  const logout = () => signOut(auth);
 
-  return { isAuthenticated, login, logout };
+  return { isAuthenticated, isChecking, login, logout };
 };
