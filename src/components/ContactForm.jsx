@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import emailjs from "@emailjs/browser";
 import { addLead } from "../firebase/leadsService";
+import { captureAttribution, getAttribution, trackLead } from "../utils/tracking";
 
 const INITIAL_FORM = {
   nombre: "",
@@ -19,6 +20,11 @@ const inputClass =
 const ContactForm = () => {
   const [form, setForm] = useState(INITIAL_FORM);
   const [isSending, setIsSending] = useState(false);
+  const isSubmittingRef = useRef(false);
+
+  useEffect(() => {
+    captureAttribution();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,13 +39,22 @@ const ContactForm = () => {
       return;
     }
 
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
     setIsSending(true);
     try {
+      const eventId = crypto.randomUUID();
+
       await addLead({
         name: form.nombre,
         phone: form.telefono,
         message: form.mensaje,
+        ...getAttribution(),
+        eventId,
       });
+
+      trackLead(eventId);
 
       if (SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY) {
         try {
@@ -69,6 +84,7 @@ const ContactForm = () => {
       );
     } finally {
       setIsSending(false);
+      isSubmittingRef.current = false;
     }
   };
 

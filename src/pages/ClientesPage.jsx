@@ -34,7 +34,7 @@ const formatDate = (timestamp) => {
 
 const formatTime = (timestamp) => {
   if (!timestamp?.toDate) return "-";
-  return timestamp.toDate().toLocaleTimeString("es-AR");
+  return timestamp.toDate().toLocaleTimeString("es-AR", { hour12: false });
 };
 
 const SORT_COLUMN_OPTIONS = [
