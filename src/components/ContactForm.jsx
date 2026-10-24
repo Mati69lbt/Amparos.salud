@@ -161,6 +161,19 @@ const ContactForm = () => {
         >
           {isSending ? "Enviando consulta..." : "Enviar consulta"}
         </button>
+
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+          Al enviar aceptás la{" "}
+          <a
+            href="/privacidad"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            política de privacidad
+          </a>
+          .
+        </p>
       </form>
     </div>
   );

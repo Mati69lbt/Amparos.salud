@@ -8,7 +8,7 @@ const Header = () => {
     <header className="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-gray-800">
       <span className="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">
         <ShieldPlus className="text-blue-600 dark:text-blue-400" size={24} />
-        Amparo Salud
+        Amparos de Salud
       </span>
 
       <button
