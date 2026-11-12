@@ -250,6 +250,7 @@ const ClientesPage = () => {
   const handleStatusChange = async (lead, status) => {
     try {
       await updateLead(lead.id, { status });
+      toast.success(`Estado actualizado a "${status}".`);
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
       toast.error("No se pudo actualizar el estado.");
@@ -451,9 +452,11 @@ const ClientesPage = () => {
                     <tr
                       key={lead.id}
                       className={`cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 ${
-                        index % 2 === 0
-                          ? "bg-white dark:bg-gray-950"
-                          : "bg-gray-50 dark:bg-gray-900"
+                        lead.status === "Cerrado"
+                          ? "bg-red-50 dark:bg-red-950/30"
+                          : index % 2 === 0
+                            ? "bg-white dark:bg-gray-950"
+                            : "bg-gray-50 dark:bg-gray-900"
                       }`}
                       onClick={() => setEditingLead(lead)}
                     >
