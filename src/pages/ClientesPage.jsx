@@ -431,6 +431,7 @@ const ClientesPage = () => {
               <table className="w-full text-sm text-left">
                 <thead className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400">
                   <tr>
+                    <th className="px-4 py-3">#</th>
                     <SortableHeader column="name" label="Nombre" sortConfig={sortConfig} onSort={handleSort} />
                     <SortableHeader column="phone" label="Contacto" sortConfig={sortConfig} onSort={handleSort} />
                     <th className="px-4 py-3">Consulta</th>
@@ -445,19 +446,24 @@ const ClientesPage = () => {
                     <th className="px-4 py-3" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-950">
-                  {sortedLeads.map((lead) => (
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                  {sortedLeads.map((lead, index) => (
                     <tr
                       key={lead.id}
-                      className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+                      className={`cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                        index % 2 === 0
+                          ? "bg-white dark:bg-gray-950"
+                          : "bg-gray-50 dark:bg-gray-900"
+                      }`}
                       onClick={() => setEditingLead(lead)}
                     >
+                      <td className="px-4 py-3 text-gray-500 dark:text-gray-500">{index + 1}</td>
                       <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{lead.name}</td>
                       <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
                         {lead.phone}
                         {lead.email && <div>{lead.email}</div>}
                       </td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-xs truncate">
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-md whitespace-pre-wrap break-words">
                         {lead.message}
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>

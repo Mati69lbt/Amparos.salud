@@ -74,10 +74,6 @@ const Hero = () => {
             <MapPin size={14} />
             Entre Ríos
           </span>
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
-            <MapPin size={14} />
-            Santa Fe Capital
-          </span>
         </div>
       </div>
 

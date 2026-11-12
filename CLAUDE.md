@@ -16,19 +16,22 @@ There is no test runner configured yet.
 React 19 + Vite scaffold (Tailwind CSS v4 via `@tailwindcss/vite`, no config file needed for Tailwind). Dark mode uses Tailwind's `dark:` class variant, toggled on `document.documentElement`.
 
 - `src/main.jsx` — entry point, mounts `<App />` into `#root` (see `index.html`), wraps in `StrictMode`.
-- `src/App.jsx` — routes by `window.location.pathname` (no router library): `/clientes` renders `ClientesPage`, everything else renders the public landing (`Header` + `Hero`). `vercel.json` rewrites all paths to `index.html` so this SPA-style routing works on direct navigation/refresh in production.
+- `src/App.jsx` — routes by `window.location.pathname` (no router library): `/clientes` renders `ClientesPage`, `/privacidad` renders `PrivacidadPage`, everything else renders the public landing (`Header` + `Hero` + a footer link to `/privacidad`). `vercel.json` rewrites all paths to `index.html` so this SPA-style routing works on direct navigation/refresh in production.
 - `src/components/Header.jsx` — brand + theme toggle button, uses `useTheme`.
 - `src/components/Hero.jsx` — landing pitch/value-prop content, renders `ContactForm`.
-- `src/components/ContactForm.jsx` — the lead-capture form; on submit persists the lead via `addLead` (Firestore) and, if EmailJS env vars are set, best-effort sends a notification via EmailJS (`@emailjs/browser`), then shows a `react-hot-toast` result.
+- `src/components/ContactForm.jsx` — the lead-capture form; on submit persists the lead via `addLead` (Firestore) and, if EmailJS env vars are set, best-effort sends a notification via EmailJS (`@emailjs/browser`), then shows a `react-hot-toast` result. Reads attribution data from `src/utils/tracking.js` and fires the `trackLead` Meta Pixel event on success.
+- `src/utils/tracking.js` — marketing attribution helpers: `captureAttribution` persists UTM params + `fbclid` from the URL into `localStorage` (prefixed `amparo_salud_`) on landing, `getAttribution` reads those back plus the `_fbp`/`_fbc` cookies for submission with a lead, `trackLead` fires the Meta Pixel (`window.fbq`) `Lead` event with a dedupe `eventID`.
 - `src/firebase/config.js` — initializes the Firebase app + Firestore (`db`) + Auth (`auth`) from `VITE_FIREBASE_*` env vars.
 - `src/firebase/leadsService.js` — Firestore CRUD helpers for the `leads` collection: `addLead`, `subscribeToLeads` (realtime, ordered by `createdAt` desc), `updateLead`, `deleteLead`.
 - `src/pages/ClientesPage.jsx` — hidden CRM at `/clientes`: Firebase Auth login gate (`useCrmAuth`), realtime leads table with search/status filter, create/edit modal, delete with confirmation. Sets `<meta name="robots" content="noindex, nofollow">` on mount.
+- `src/pages/PrivacidadPage.jsx` — static privacy policy page at `/privacidad`, linked from the landing footer.
 - `src/hooks/useCrmAuth.js` — Firebase Authentication (email/password) gate for the CRM via `onAuthStateChanged`/`signInWithEmailAndPassword`/`signOut`.
 - `src/components/crm/LeadModal.jsx` — create/edit form modal for a lead.
 - `src/components/crm/crmConstants.js` — shared CRM constants (`STATUS_OPTIONS`), kept out of component files for Fast Refresh.
 - `src/hooks/useTheme.js` — theme state (`light`/`dark`), persisted to `localStorage` under `amparo-salud-theme`, defaulting to `prefers-color-scheme`.
 - `src/index.css` — single global stylesheet, just `@import "tailwindcss";`.
-- No state management library or router package is used — routing is a plain pathname check since the app only has two views.
+- `src/spec/` — design/implementation spec notes (`firestore-crm-spec.md`, `1ra_actualizacion.md`), not consumed by code.
+- No state management library or router package is used — routing is a plain pathname check since the app only has three views.
 
 ESLint config (`eslint.config.js`) is flat-config style: `js.configs.recommended` + `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh` (Vite preset), browser globals, JSX enabled for `**/*.{js,jsx}`. `dist/` is ignored.
 
